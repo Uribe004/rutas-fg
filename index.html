@@ -22,6 +22,8 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height
 .status-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(46,204,113,0.25);}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.sync-bar{background:var(--amber-dim);border-bottom:1px solid rgba(243,156,18,0.2);padding:6px 16px;font-size:12px;color:var(--amber);display:none;align-items:center;gap:6px;}
+.sync-bar.show{display:flex;}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;}
 .stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;text-align:center;}
 .stat-val{font-size:22px;font-weight:600;color:var(--text);font-family:var(--mono);}
@@ -58,17 +60,26 @@ select option{background:var(--bg2);}
 .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-left:6px;}
 .badge-green{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(46,204,113,0.2);}
 .badge-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(155,89,182,0.2);}
+.badge-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(243,156,18,0.2);}
 .est-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
 .est-item:last-child{border-bottom:none;}
 .est-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .est-body{flex:1;}
 .est-name{font-size:14px;font-weight:500;color:var(--text);}
 .est-monto{font-size:12px;color:var(--text3);font-family:var(--mono);}
-.hist-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.hist-item{padding:14px 0;border-bottom:1px solid var(--border);}
 .hist-item:last-child{border-bottom:none;}
-.hist-fecha{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;}
-.hist-ruta{font-size:12px;color:var(--text3);line-height:1.7;}
-.hist-total{font-size:12px;color:var(--accent);margin-top:4px;font-family:var(--mono);}
+.hist-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.hist-fecha{font-size:13px;font-weight:600;color:var(--text);}
+.hist-paradas{display:flex;flex-direction:column;gap:4px;}
+.hist-parada{display:flex;align-items:center;gap:8px;font-size:12px;}
+.hist-parada-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
+.hist-parada-info{flex:1;color:var(--text2);}
+.hist-parada-monto{font-family:var(--mono);font-size:11px;color:var(--accent);}
+.hist-parada-pendiente{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.hist-total{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.hist-total-lbl{font-size:12px;color:var(--text3);}
+.hist-total-val{font-size:14px;font-weight:600;color:var(--accent);font-family:var(--mono);}
 .alert{padding:10px 12px;border-radius:var(--r-sm);font-size:13px;margin-top:8px;}
 .alert-ok{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(46,204,113,0.2);}
 .alert-err{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(231,76,60,0.2);}
@@ -82,6 +93,7 @@ select option{background:var(--bg2);}
 .cfg-info{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.7;}
 .cfg-info code{font-family:var(--mono);font-size:12px;background:var(--bg2);padding:1px 5px;border-radius:3px;color:var(--accent);}
 .fab-area{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:linear-gradient(transparent,var(--bg) 30%);padding:12px 16px 20px;z-index:50;}
+.online-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:4px;}
 .c0{background:#2ecc71;color:#0a1a10;}.c1{background:#3498db;color:#fff;}.c2{background:#9b59b6;color:#fff;}.c3{background:#f39c12;color:#0a1a10;}.c4{background:#e74c3c;color:#fff;}.c5{background:#1abc9c;color:#0a1a10;}.c6{background:#e67e22;color:#fff;}.c7{background:#34495e;color:#fff;}.c8{background:#16a085;color:#fff;}.c9{background:#8e44ad;color:#fff;}.c10{background:#2980b9;color:#fff;}
 .dot0{background:#2ecc71;}.dot1{background:#3498db;}.dot2{background:#9b59b6;}.dot3{background:#f39c12;}.dot4{background:#e74c3c;}.dot5{background:#1abc9c;}.dot6{background:#e67e22;}.dot7{background:#34495e;}.dot8{background:#16a085;}.dot9{background:#8e44ad;}.dot10{background:#2980b9;}
 </style>
@@ -94,6 +106,7 @@ select option{background:var(--bg2);}
   </div>
   <div class="header-date" id="fecha-hoy"></div>
 </div>
+<div class="sync-bar" id="sync-bar">⟳ Sincronizando...</div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('ruta')">Ruta</button>
   <button class="tab" onclick="showTab('estaciones')">Estaciones</button>
@@ -107,17 +120,8 @@ select option{background:var(--bg2);}
     <div class="stat"><div class="stat-val" id="s-rec">$0</div><div class="stat-lbl">Recaudado</div></div>
   </div>
   <div class="card">
-    <div class="card-title">Banco destino</div>
-    <select id="banco-sel">
-      <option value="">— Seleccionar banco —</option>
-      <option value="Banbajío">Banbajío</option>
-      <option value="BBVA La Joya">BBVA La Joya</option>
-      <option value="BBVA San Carlos">BBVA San Carlos</option>
-    </select>
-  </div>
-  <div class="card">
     <div class="card-title">Orden de visita</div>
-    <div id="route-list" class="stop-list"><div class="empty">Genera la ruta del día para comenzar.</div></div>
+    <div id="route-list" class="stop-list"><div class="empty">Presiona "Generar ruta de hoy" para comenzar.</div></div>
     <div id="total-wrap" style="display:none;">
       <div class="total-box"><span class="total-box-lbl">Total máx. asegurado</span><span class="total-box-val" id="total-max-txt">$0</span></div>
       <div class="total-box" style="margin-top:6px;"><span class="total-box-lbl">Recaudado hoy</span><span class="total-box-val" id="total-rec-txt">$0</span></div>
@@ -130,7 +134,7 @@ select option{background:var(--bg2);}
   <button class="btn btn-primary" onclick="generarRuta(0)">Generar ruta de hoy</button>
   <div style="display:flex;gap:8px;">
     <button class="btn" style="margin-bottom:0;" onclick="regenerarRuta()">Variante</button>
-    <button class="btn btn-success" style="margin-bottom:0;" onclick="guardarYEnviar()">Guardar y enviar email</button>
+    <button class="btn btn-success" style="margin-bottom:0;" onclick="guardarRuta()">Guardar ruta</button>
   </div>
 </div>
 <div id="tab-estaciones" class="content" style="display:none;">
@@ -147,13 +151,15 @@ select option{background:var(--bg2);}
   </div>
 </div>
 <div id="tab-historial" class="content" style="display:none;">
-  <div class="card">
-    <div class="card-title">Rutas guardadas</div>
-    <div id="lista-hist"><div class="empty">Sin historial aún.</div></div>
-  </div>
+  <div id="lista-hist"><div class="empty">Sin historial aún.</div></div>
   <button class="btn btn-danger btn-sm" onclick="limpiarHist()" style="width:100%;margin-top:8px;">Borrar historial</button>
 </div>
 <div id="tab-config" class="content" style="display:none;">
+  <div class="card">
+    <div class="card-title">Firebase — sincronización en tiempo real</div>
+    <div class="cfg-info">Todos los dispositivos comparten la misma ruta y estado al instante.</div>
+    <div id="firebase-status" style="font-size:13px;color:var(--text2);"></div>
+  </div>
   <div class="card">
     <div class="card-title">Configuración de email (EmailJS)</div>
     <div class="cfg-info">
@@ -161,7 +167,7 @@ select option{background:var(--bg2);}
       2. Agrega un Email Service con tu correo<br>
       3. Crea un Email Template<br>
       4. Pega las claves aquí y guarda<br><br>
-      Variables: <code>{{fecha}}</code> <code>{{banco}}</code> <code>{{ruta}}</code> <code>{{total_max}}</code> <code>{{estacion}}</code> <code>{{monto_real}}</code>
+      Variables: <code>{{fecha}}</code> <code>{{ruta}}</code> <code>{{estacion}}</code> <code>{{monto_real}}</code> <code>{{banco}}</code>
     </div>
     <div class="cfg-row"><div class="cfg-lbl">Service ID</div><input type="text" id="cfg-service" placeholder="service_xxxxxxx"/></div>
     <div class="cfg-row"><div class="cfg-lbl">Template ID</div><input type="text" id="cfg-template" placeholder="template_xxxxxxx"/></div>
@@ -172,41 +178,45 @@ select option{background:var(--bg2);}
     <div id="alert-cfg"></div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+const firebaseConfig = { databaseURL: "https://valores-122df-default-rtdb.firebaseio.com" };
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 const DEFAULT_EST=[{nombre:'San Carlos',monto:130000},{nombre:'Miramar',monto:140000},{nombre:'Corsario',monto:150000},{nombre:'San Germán',monto:220000},{nombre:'Valiente',monto:110000},{nombre:'Loma Linda',monto:150000},{nombre:'Petrolera',monto:150000},{nombre:'Estadio',monto:125000},{nombre:'MG Roca F',monto:150000},{nombre:'Arcaza',monto:100000},{nombre:'Batuecas',monto:150000}];
-let estaciones=[],historial=[],rutaActual=[],completadas={},varianteSeed=null;
+let estaciones=[...DEFAULT_EST],rutaActual=[],completadas={},historial=[],varianteSeed=null;
 let cfg={serviceId:'',templateId:'',pubKey:'',email:'francisco.uribes@flechagasolineras.com.mx'};
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function cargar(){estaciones=lsGet('fg_est')||[...DEFAULT_EST];historial=lsGet('fg_hist')||[];cfg=lsGet('fg_cfg')||cfg;loadCfgInputs();renderEst();renderHist();updStats();}
 function fechaHoy(){return new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
 function fechaKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 document.getElementById('fecha-hoy').textContent=fechaHoy();
 function shuffle(arr,seed){const a=[...arr];let s=seed;for(let i=a.length-1;i>0;i--){s=(s*1664525+1013904223)&0xffffffff;const j=Math.abs(s)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
 function dateSeed(e=0){const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()+e*999983;}
 function fmt(n){return '$'+Number(n).toLocaleString('es-MX');}
-function generarRuta(extra){if(!estaciones.length){showAlert('alert-ruta','No hay estaciones.','err');return;}varianteSeed=extra;completadas={};rutaActual=shuffle(estaciones,dateSeed(extra));renderRuta();document.getElementById('badge-estado').textContent='Ruta activa';document.getElementById('msg-ruta').textContent=extra===0?'Ruta generada — cambia cada día.':'Variante aleatoria generada.';updStats();}
-function regenerarRuta(){generarRuta(Math.floor(Math.random()*89999)+1);}
-function renderRuta(){const el=document.getElementById('route-list');if(!rutaActual.length){el.innerHTML='<div class="empty">Sin paradas.</div>';return;}el.innerHTML=rutaActual.map((e,i)=>{const done=completadas[e.nombre];const isLast=i===rutaActual.length-1;const badges=(i===0&&!done?'<span class="badge badge-green">Inicio</span>':'')+(isLast?'<span class="badge badge-purple">Última</span>':'')+(done?'<span class="badge badge-green">✓ Lista</span>':'');return `<div class="stop-item">${!isLast?'<div class="stop-connector"></div>':''}<div class="stop-num c${i%11}">${done?'✓':i+1}</div><div class="stop-body"><div class="stop-name">${e.nombre}${badges}</div><div class="stop-meta">Máx. ${fmt(e.monto)}</div>${done?`<div class="stop-done-info">Trasladado: ${fmt(done.monto)} · ${done.banco}</div>`:`<div class="stop-form"><input type="number" id="amt-${i}" placeholder="Monto trasladado ($)" min="0" max="${e.monto}" inputmode="numeric"/><select id="banco-${i}"><option value="">— Banco destino —</option><option value="Banbajío">Banbajío</option><option value="BBVA La Joya">BBVA La Joya</option><option value="BBVA San Carlos">BBVA San Carlos</option></select><button class="btn btn-success btn-sm" onclick="completarEst(${i})">Marcar como terminada ✓</button></div>`}</div></div>`;}).join('');const totalMax=rutaActual.reduce((s,e)=>s+e.monto,0);const rec=Object.values(completadas).reduce((s,d)=>s+(d?d.monto:0),0);document.getElementById('total-max-txt').textContent=fmt(totalMax);document.getElementById('total-rec-txt').textContent=fmt(rec);document.getElementById('total-wrap').style.display='block';}
-async function completarEst(i){const est=rutaActual[i];const monto=parseFloat(document.getElementById('amt-'+i)?.value||0)||0;const banco=document.getElementById('banco-'+i)?.value||'';if(monto<=0){showAlert('alert-ruta','Ingresa el monto en "'+est.nombre+'".','err');return;}if(!banco){showAlert('alert-ruta','Selecciona el banco para "'+est.nombre+'".','err');return;}if(monto>est.monto){showAlert('alert-ruta',`Monto excede el límite del seguro (${fmt(est.monto)}).`,'err');return;}completadas[est.nombre]={monto,banco};renderRuta();updStats();showAlert('alert-ruta',`"${est.nombre}" completada.`,'ok');await enviarEmailEst(est.nombre,monto,banco);}
-async function guardarYEnviar(){if(!rutaActual.length){showAlert('alert-ruta','Genera una ruta primero.','err');return;}const banco=document.getElementById('banco-sel').value;if(!banco){showAlert('alert-ruta','Selecciona el banco destino.','err');return;}const key=fechaKey();const totalMax=rutaActual.reduce((s,e)=>s+e.monto,0);const entrada={fecha:key,fechaLegible:fechaHoy(),ruta:rutaActual.map(e=>e.nombre),total:totalMax,banco,variante:varianteSeed};historial=historial.filter(h=>h.fecha!==key);historial.unshift(entrada);if(historial.length>60)historial=historial.slice(0,60);lsSet('fg_hist',historial);renderHist();updStats();showAlert('alert-ruta','Guardada. Enviando email...','ok');await enviarEmailRuta(banco,totalMax);}
-function buildRutaTxt(){return rutaActual.map((e,i)=>`${i+1}. ${e.nombre} (máx. ${fmt(e.monto)})`).join('\n');}
-async function enviarEmailRuta(banco,totalMax){if(!cfg.serviceId||!cfg.templateId||!cfg.pubKey){showAlert('alert-ruta','Email no configurado. Ve a Config.','err');return;}try{emailjs.init(cfg.pubKey);await emailjs.send(cfg.serviceId,cfg.templateId,{to_email:cfg.email,fecha:fechaHoy(),banco,ruta:buildRutaTxt(),total_max:fmt(totalMax),tipo:'ruta_dia',estacion:'—',monto_real:'—'});showAlert('alert-ruta','Enviado a '+cfg.email,'ok');}catch(err){showAlert('alert-ruta','Error: '+JSON.stringify(err),'err');}}
-async function enviarEmailEst(nombre,monto,banco){if(!cfg.serviceId||!cfg.templateId||!cfg.pubKey)return;try{emailjs.init(cfg.pubKey);await emailjs.send(cfg.serviceId,cfg.templateId,{to_email:cfg.email,fecha:fechaHoy(),banco,ruta:buildRutaTxt(),total_max:fmt(rutaActual.reduce((s,e)=>s+e.monto,0)),tipo:'estacion_completada',estacion:nombre,monto_real:fmt(monto)});}catch(err){console.log(err);}}
+function showSync(s){document.getElementById('sync-bar').classList.toggle('show',s);}
+onValue(ref(db,'ruta_hoy'),snap=>{const data=snap.val();if(data){rutaActual=data.paradas||[];completadas=data.completadas||{};varianteSeed=data.variante??null;renderRuta();document.getElementById('badge-estado').textContent='Ruta activa';document.getElementById('msg-ruta').textContent='Sincronizado en tiempo real.';updStats();}});
+onValue(ref(db,'historial'),snap=>{const data=snap.val();historial=data?Object.values(data).sort((a,b)=>b.fecha.localeCompare(a.fecha)):[];renderHist();updStats();});
+window.generarRuta=async function(extra){if(!estaciones.length){showAlert('alert-ruta','No hay estaciones.','err');return;}varianteSeed=extra;completadas={};rutaActual=shuffle(estaciones,dateSeed(extra));showSync(true);await set(ref(db,'ruta_hoy'),{paradas:rutaActual,completadas:{},variante:extra,fecha:fechaKey(),fechaLegible:fechaHoy()});showSync(false);renderRuta();document.getElementById('badge-estado').textContent='Ruta activa';document.getElementById('msg-ruta').textContent=extra===0?'Ruta generada y compartida.':'Variante generada y compartida.';updStats();};
+window.regenerarRuta=function(){window.generarRuta(Math.floor(Math.random()*89999)+1);};
+window.completarEst=async function(i){const est=rutaActual[i];const monto=parseFloat(document.getElementById('amt-'+i)?.value||0)||0;const banco=document.getElementById('banco-'+i)?.value||'';if(monto<=0){showAlert('alert-ruta','Ingresa el monto en "'+est.nombre+'".','err');return;}if(!banco){showAlert('alert-ruta','Selecciona el banco.','err');return;}if(monto>est.monto){showAlert('alert-ruta','El monto excede el límite del seguro.','err');return;}completadas[est.nombre]={monto,banco,hora:new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})};showSync(true);await set(ref(db,'ruta_hoy/completadas'),completadas);showSync(false);renderRuta();updStats();showAlert('alert-ruta',`"${est.nombre}" completada ✓`,'ok');await enviarEmailEst(est.nombre,monto,banco);};
+window.guardarRuta=async function(){if(!rutaActual.length){showAlert('alert-ruta','Genera una ruta primero.','err');return;}const key=fechaKey();const totalMax=rutaActual.reduce((s,e)=>s+e.monto,0);const totalRec=Object.values(completadas).reduce((s,d)=>s+(d?d.monto:0),0);const entrada={fecha:key,fechaLegible:fechaHoy(),paradas:rutaActual.map(e=>({nombre:e.nombre,montoMax:e.monto,completada:completadas[e.nombre]||null})),totalMax,totalRecaudado:totalRec,completadas:Object.keys(completadas).length};showSync(true);await set(ref(db,`historial/${key}`),entrada);showSync(false);showAlert('alert-ruta','Guardado en historial.','ok');};
+function renderRuta(){const el=document.getElementById('route-list');if(!rutaActual.length){el.innerHTML='<div class="empty">Sin paradas.</div>';return;}el.innerHTML=rutaActual.map((e,i)=>{const done=completadas[e.nombre];const isLast=i===rutaActual.length-1;const badges=(i===0&&!done?'<span class="badge badge-green">Inicio</span>':'')+(isLast?'<span class="badge badge-purple">Última</span>':'')+(done?'<span class="badge badge-green">✓ Lista</span>':'');return `<div class="stop-item">${!isLast?'<div class="stop-connector"></div>':''}<div class="stop-num c${i%11}">${done?'✓':i+1}</div><div class="stop-body"><div class="stop-name">${e.nombre}${badges}</div><div class="stop-meta">Máx. ${fmt(e.monto)}</div>${done?`<div class="stop-done-info">✓ ${fmt(done.monto)} · ${done.banco}${done.hora?' · '+done.hora:''}</div>`:`<div class="stop-form"><input type="number" id="amt-${i}" placeholder="Monto trasladado ($)" min="0" max="${e.monto}" inputmode="numeric"/><select id="banco-${i}"><option value="">— Seleccionar banco —</option><option value="Banbajío">Banbajío</option><option value="BBVA La Joya">BBVA La Joya</option><option value="BBVA San Carlos">BBVA San Carlos</option></select><button class="btn btn-success btn-sm" onclick="completarEst(${i})">Marcar como terminada ✓</button></div>`}</div></div>`;}).join('');const totalMax=rutaActual.reduce((s,e)=>s+e.monto,0);const rec=Object.values(completadas).reduce((s,d)=>s+(d?d.monto:0),0);document.getElementById('total-max-txt').textContent=fmt(totalMax);document.getElementById('total-rec-txt').textContent=fmt(rec);document.getElementById('total-wrap').style.display='block';}
+function renderHist(){const el=document.getElementById('lista-hist');if(!historial.length){el.innerHTML='<div class="empty">Sin historial guardado.</div>';return;}el.innerHTML=historial.map(h=>{const paradas=h.paradas||[];const paradasHTML=paradas.map((p,i)=>`<div class="hist-parada"><div class="hist-parada-num c${i%11}">${i+1}</div><div class="hist-parada-info">${p.nombre}</div>${p.completada?`<div class="hist-parada-monto">${fmt(p.completada.monto)} · ${p.completada.banco}</div>`:`<div class="hist-parada-pendiente">Pendiente</div>`}</div>`).join('');return `<div class="card hist-item"><div class="hist-header"><div class="hist-fecha">${h.fechaLegible}</div><span class="badge badge-amber">${h.completadas||0}/${paradas.length} listas</span></div><div class="hist-paradas">${paradasHTML}</div><div class="hist-total"><span class="hist-total-lbl">Recaudado / Máximo</span><span class="hist-total-val">${fmt(h.totalRecaudado||0)} / ${fmt(h.totalMax||0)}</span></div></div>`;}).join('');}
 function renderEst(){const el=document.getElementById('lista-est');if(!estaciones.length){el.innerHTML='<div class="empty">Sin estaciones.</div>';return;}const dc=['dot0','dot1','dot2','dot3','dot4','dot5','dot6','dot7','dot8','dot9','dot10'];el.innerHTML=estaciones.map((e,i)=>`<div class="est-item"><div class="est-dot ${dc[i%11]}"></div><div class="est-body"><div class="est-name">${e.nombre}</div><div class="est-monto">Máx. ${fmt(e.monto)}</div></div><button class="btn btn-danger btn-sm" onclick="eliminarEst(${i})">Eliminar</button></div>`).join('');}
-function agregarEst(){const nombre=document.getElementById('inp-nombre').value.trim();const monto=parseInt(document.getElementById('inp-monto').value)||0;const msg=document.getElementById('msg-est');if(!nombre){msg.textContent='Escribe el nombre.';return;}if(monto<=0){msg.textContent='Ingresa un monto válido.';return;}estaciones.push({nombre,monto});lsSet('fg_est',estaciones);renderEst();updStats();document.getElementById('inp-nombre').value='';document.getElementById('inp-monto').value='';msg.textContent=`"${nombre}" agregada.`;}
-function eliminarEst(i){estaciones.splice(i,1);lsSet('fg_est',estaciones);renderEst();updStats();}
-function renderHist(){const el=document.getElementById('lista-hist');if(!historial.length){el.innerHTML='<div class="empty">Sin historial.</div>';return;}el.innerHTML=historial.map(h=>`<div class="hist-item"><div style="display:flex;justify-content:space-between;align-items:center;"><div class="hist-fecha">${h.fechaLegible}</div><span class="badge badge-green">${h.banco||'—'}</span></div><div class="hist-ruta">${h.ruta.join(' → ')}</div><div class="hist-total">Total máx.: ${fmt(h.total)}</div></div>`).join('');}
-function limpiarHist(){historial=[];lsSet('fg_hist',historial);renderHist();updStats();}
+window.agregarEst=function(){const nombre=document.getElementById('inp-nombre').value.trim();const monto=parseInt(document.getElementById('inp-monto').value)||0;const msg=document.getElementById('msg-est');if(!nombre){msg.textContent='Escribe el nombre.';return;}if(monto<=0){msg.textContent='Ingresa un monto válido.';return;}estaciones.push({nombre,monto});renderEst();updStats();document.getElementById('inp-nombre').value='';document.getElementById('inp-monto').value='';msg.textContent=`"${nombre}" agregada.`;};
+window.eliminarEst=function(i){estaciones.splice(i,1);renderEst();updStats();};
+window.limpiarHist=async function(){if(!confirm('¿Borrar todo el historial?'))return;await remove(ref(db,'historial'));historial=[];renderHist();};
 function updStats(){document.getElementById('s-total').textContent=estaciones.length;const comp=Object.keys(completadas).length;document.getElementById('s-comp').textContent=comp+'/'+rutaActual.length;const rec=Object.values(completadas).reduce((s,d)=>s+(d?d.monto:0),0);document.getElementById('s-rec').textContent=rec>0?'$'+Math.round(rec/1000)+'k':'$0';}
-function loadCfgInputs(){document.getElementById('cfg-service').value=cfg.serviceId||'';document.getElementById('cfg-template').value=cfg.templateId||'';document.getElementById('cfg-pubkey').value=cfg.pubKey||'';document.getElementById('cfg-email').value=cfg.email||'francisco.uribes@flechagasolineras.com.mx';}
-function guardarCfg(){cfg={serviceId:document.getElementById('cfg-service').value.trim(),templateId:document.getElementById('cfg-template').value.trim(),pubKey:document.getElementById('cfg-pubkey').value.trim(),email:document.getElementById('cfg-email').value.trim()};lsSet('fg_cfg',cfg);if(cfg.pubKey)emailjs.init(cfg.pubKey);showAlert('alert-cfg','Configuración guardada.','ok');}
-async function testEmail(){if(!cfg.serviceId||!cfg.templateId||!cfg.pubKey){showAlert('alert-cfg','Completa las 3 claves primero.','err');return;}try{emailjs.init(cfg.pubKey);await emailjs.send(cfg.serviceId,cfg.templateId,{to_email:cfg.email,fecha:fechaHoy(),banco:'Prueba',ruta:'Prueba',total_max:'$0',tipo:'prueba',estacion:'—',monto_real:'—'});showAlert('alert-cfg','Correo enviado a '+cfg.email,'ok');}catch(err){showAlert('alert-cfg','Error: '+JSON.stringify(err),'err');}}
+async function enviarEmailEst(nombre,monto,banco){const c=lsGet('fg_cfg')||cfg;if(!c.serviceId||!c.templateId||!c.pubKey)return;try{const {default:emailjs}=await import('https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm');emailjs.init(c.pubKey);await emailjs.send(c.serviceId,c.templateId,{to_email:c.email,fecha:fechaHoy(),banco,ruta:rutaActual.map((e,i)=>`${i+1}. ${e.nombre}`).join('\n'),estacion:nombre,monto_real:fmt(monto),tipo:'estacion_completada'});}catch(err){console.log(err);}}
+window.guardarCfg=function(){cfg={serviceId:document.getElementById('cfg-service').value.trim(),templateId:document.getElementById('cfg-template').value.trim(),pubKey:document.getElementById('cfg-pubkey').value.trim(),email:document.getElementById('cfg-email').value.trim()};lsSet('fg_cfg',cfg);showAlert('alert-cfg','Configuración guardada.','ok');};
+window.testEmail=async function(){const c=lsGet('fg_cfg')||cfg;if(!c.serviceId||!c.templateId||!c.pubKey){showAlert('alert-cfg','Completa las 3 claves primero.','err');return;}try{const {default:emailjs}=await import('https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm');emailjs.init(c.pubKey);await emailjs.send(c.serviceId,c.templateId,{to_email:c.email,fecha:fechaHoy(),banco:'Prueba',ruta:'Prueba',estacion:'—',monto_real:'$0',tipo:'prueba'});showAlert('alert-cfg','Correo enviado.','ok');}catch(err){showAlert('alert-cfg','Error: '+JSON.stringify(err),'err');}};
 const TABS=['ruta','estaciones','historial','config'];
-function showTab(t){TABS.forEach(id=>{document.getElementById('tab-'+id).style.display=id===t?'flex':'none';if(id===t)document.getElementById('tab-'+id).style.flexDirection='column';});const fab=document.getElementById('fab-ruta');if(fab)fab.style.display=t==='ruta'?'block':'none';document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',TABS[i]===t);});}
-function showAlert(id,msg,type){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="alert alert-${type==='ok'?'ok':'err'}">${msg}</div>`;setTimeout(()=>{el.innerHTML='';},5000);}
-cargar();
+window.showTab=function(t){TABS.forEach(id=>{document.getElementById('tab-'+id).style.display=id===t?'flex':'none';if(id===t)document.getElementById('tab-'+id).style.flexDirection='column';});const fab=document.getElementById('fab-ruta');if(fab)fab.style.display=t==='ruta'?'block':'none';document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',TABS[i]===t);});};
+window.showAlert=function(id,msg,type){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="alert alert-${type==='ok'?'ok':'err'}">${msg}</div>`;setTimeout(()=>{el.innerHTML='';},5000);};
+function loadCfgInputs(){const c=lsGet('fg_cfg')||cfg;document.getElementById('cfg-service').value=c.serviceId||'';document.getElementById('cfg-template').value=c.templateId||'';document.getElementById('cfg-pubkey').value=c.pubKey||'';document.getElementById('cfg-email').value=c.email||'francisco.uribes@flechagasolineras.com.mx';document.getElementById('firebase-status').innerHTML='<span class="online-dot"></span> Firebase conectado · valores-122df';}
+renderEst();updStats();loadCfgInputs();
 </script>
 </body>
 </html>
