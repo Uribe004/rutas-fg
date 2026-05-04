@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+›<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -462,6 +462,7 @@ window.confirmarEditar=async function(){
 onValue(ref(db,'ruta_hoy'),function(snap){
   if(!escucharRuta)return;
   var data=snap.val();
+  if(!data){rutaActual=[];completadas={};rutaBloqueada=false;renderRuta();renderBloqueado();updStats();document.getElementById('badge-estado').textContent='Sin ruta';return;}
   if(data){
     if(data.fecha&&data.fecha!==fechaKey()){rutaActual=[];completadas={};rutaBloqueada=false;renderRuta();renderBloqueado();updStats();return;}
     rutaActual=data.paradas||[];completadas=data.completadas||{};
