@@ -515,8 +515,7 @@ window.generarRuta=async function(extra){
   showSync(false);renderRuta();renderBloqueado();updStats();
   document.getElementById('badge-estado').textContent='Ruta activa';
   var nP=Object.keys(pendientesAyer).length;
-  document.getElementById('msg-ruta').textContent=extra===0?'Ruta generada.'+(nP?' ('+nP+' pendiente'+(nP>1?'s':'')+' de ayer al inicio)'):'Variante generada.';
-};
+ document.getElementById('msg-ruta').textContent=extra===0?'Ruta generada.':'Variante generada.';
 window.pedirVariante=function(){openModal('Autorización','Contraseña para cambiar la ruta.',function(){escucharRuta=true;rutaBloqueada=false;window.generarRuta(Math.floor(Math.random()*89999)+1);});};
 window.pedirEditar=function(){openModal('Editar ruta','Contraseña para desbloquear.',function(){rutaBloqueada=false;escucharRuta=false;renderRuta();renderBloqueado();showAlert('alert-ruta','✓ Desbloqueada.','ok');});};
 
