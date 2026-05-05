@@ -644,7 +644,7 @@ window.completarEst=async function(i){
   if(monto<=0){showAlert('alert-ruta','Ingresa el monto en '+est.nombre+'.','err');return;}
   if(!banco){showAlert('alert-ruta','Selecciona el banco.','err');return;}
   var h=ahora(),prev=completadas[est.nombre]||{};
-  completadas[est.nombre]=Object.assign({},prev,{monto:monto,banco:banco,hora:h,horaLlegada:prev.horaLlegada||h,horaSalida:prev.horaSalida||h,dolares:dolares||0});
+  completadas[est.nombre]={monto:monto,banco:banco,hora:h,horaLlegada:prev.horaLlegada||h,horaSalida:prev.horaSalida||h,dolares:dolares||0};
   showSync(true);await set(ref(db,'ruta_hoy/completadas'),completadas);showSync(false);
   renderRuta();updStats();showAlert('alert-ruta',est.nombre+' completada','ok');
   await enviarEmail(est.nombre,monto,banco);
