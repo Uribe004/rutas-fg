@@ -675,6 +675,8 @@ window.completarVuelta=async function(i,num){
   var h=ahora();
   if(!completadas[est.nombre])completadas[est.nombre]={};
   var prevV=completadas[est.nombre]['vuelta'+num]||{};
+  delete completadas[est.nombre].pendiente;
+  delete completadas[est.nombre].horaPendiente;
   completadas[est.nombre]['vuelta'+num]={monto:monto,banco:banco,hora:h,horaLlegada:prevV.horaLlegada||h,horaSalida:prevV.horaSalida||h};
   showSync(true);await set(ref(db,'ruta_hoy/completadas'),completadas);showSync(false);
   renderRuta();updStats();showAlert('alert-ruta',est.nombre+' vuelta '+num+' completada','ok');
