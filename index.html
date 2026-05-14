@@ -62,13 +62,13 @@ select option{background:var(--bg2);}
 .stop-meta{font-size:12px;color:var(--text3);margin-top:2px;}
 .stop-form{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
 .stop-done-info{margin-top:6px;background:var(--accent-dim);border:1px solid rgba(46,204,113,0.2);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;color:var(--accent);}
-.stop-time-info{margin-top:4px;background:var(--amber-dim);border:1px solid rgba(243,156,18,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;color:var(--amber);}
 .stop-pending-info{margin-top:6px;background:var(--danger-dim);border:1px solid rgba(231,76,60,0.2);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;color:var(--danger);}
 .stop-pending-motivo{margin-top:6px;background:var(--purple-dim);border:1px solid rgba(155,89,182,0.2);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;color:var(--purple);}
 .vuelta-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
 .vuelta-title{font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:600;letter-spacing:0.06em;margin-bottom:8px;}
 .unidad-section{margin-top:8px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);}
 .unidad-title{font-size:11px;color:var(--amber);text-transform:uppercase;font-weight:600;letter-spacing:0.06em;margin-bottom:8px;}
+.cierre-section{margin-top:10px;padding:12px;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--r-sm);}
 .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-left:6px;}
 .badge-green{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(46,204,113,0.2);}
 .badge-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(155,89,182,0.2);}
@@ -651,7 +651,8 @@ window.completarEst=async function(i){
   await enviarEmail(est.nombre,monto,banco);
 };
 
-window.completarUnidad=async function(i,unidad){
+// ── Completar unidad SIN re-renderizar toda la ruta ───────────────────────────
+window.completarUnidad=async function(i,unidad,unidades){
   var est=rutaActual[i];
   var monto=getMontoVal(document.getElementById('u-amt-'+i+'-'+unidad));
   var banco=document.getElementById('u-banco-'+i+'-'+unidad)?document.getElementById('u-banco-'+i+'-'+unidad).value:'';
@@ -662,7 +663,27 @@ window.completarUnidad=async function(i,unidad){
   var prev=completadas[est.nombre][unidad]||{};
   completadas[est.nombre][unidad]={monto:monto,banco:banco,hora:h,horaLlegada:prev.horaLlegada||h,horaSalida:prev.horaSalida||h};
   showSync(true);await set(ref(db,'ruta_hoy/completadas'),completadas);showSync(false);
-  renderRuta();updStats();showAlert('alert-ruta',est.nombre+' - '+unidad+' completada','ok');
+  showAlert('alert-ruta',est.nombre+' - '+unidad+' completada','ok');
+  // Actualizar solo la seccion de esta unidad sin re-renderizar todo
+  var secEl=document.getElementById('unidad-sec-'+i+'-'+unidad);
+  if(secEl){
+    secEl.innerHTML='<div class="unidad-title">'+unidad+'</div>'+
+      '<div class="stop-done-info">'+fmt(monto)+' - '+banco+' - '+h+'</div>'+
+      '<button class="btn btn-sm" style="margin-top:6px;width:auto;" onclick="abrirEditarModal('+i+',null,\''+unidad+'\')">Editar</button>';
+  }
+  // Verificar si todas las unidades estan completas para mostrar cierre
+  var todasListas=unidades.every(function(u){return completadas[est.nombre][u]&&completadas[est.nombre][u].monto;});
+  if(todasListas){
+    var cierreEl=document.getElementById('cierre-'+i);
+    if(cierreEl){
+      cierreEl.innerHTML=
+        '<div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:8px;">Todas las unidades completas</div>'+
+        montoInput('usd-'+i,'Dolares (opcional)')+
+        '<button class="btn btn-success btn-sm" style="margin-top:8px;" onclick="completarEstConUnidades('+i+')">Marcar como terminada</button>';
+      cierreEl.style.display='block';
+    }
+  }
+  updStats();
 };
 
 window.completarEstConUnidades=async function(i){
@@ -729,34 +750,32 @@ function renderDolaresInput(i,done){
 function renderUnidades(i,e,done,locked,unidades){
   var html='';
   var todasDone=done&&unidades.every(function(u){return done[u]&&done[u].monto;});
+  var yaTerminada=todasDone&&done&&done.horaTerminada;
+  var unidadesJS='[\''+unidades.join('\',\'')+'\']';
   unidades.forEach(function(u){
     var ud=done?done[u]:null;
-    html+='<div class="unidad-section">';
+    html+='<div class="unidad-section" id="unidad-sec-'+i+'-'+u+'">';
     html+='<div class="unidad-title">'+u+'</div>';
     if(ud&&ud.monto){
       html+='<div class="stop-done-info">'+fmt(ud.monto)+' - '+ud.banco+(ud.hora?' - '+ud.hora:'')+'</div>';
       if(!locked)html+='<button class="btn btn-sm" style="margin-top:6px;width:auto;" onclick="abrirEditarModal('+i+',null,\''+u+'\')">Editar</button>';
     } else if(!locked){
       html+=montoInput('u-amt-'+i+'-'+u,'Monto '+u+' ($)')+bancosSelect('u-banco-'+i+'-'+u,'');
-      html+='<button class="btn btn-success btn-sm" style="margin-top:4px;" onclick="completarUnidad('+i+',\''+u+'\')">Marcar '+u+'</button>';
+      html+='<button class="btn btn-success btn-sm" style="margin-top:4px;" onclick="completarUnidad('+i+',\''+u+'\','+unidadesJS+')">Marcar '+u+'</button>';
     }
     html+='</div>';
   });
-  if(todasDone&&!locked){
-    var usd=done&&done.dolares?done.dolares:0;
-    if(usd>0){
-      html+='<div style="background:var(--blue-dim);border:1px solid rgba(52,152,219,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:12px;color:var(--blue);margin-top:8px;">'+usd.toLocaleString('es-MX')+' USD</div>';
-    } else {
-      html+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">';
-      html+=montoInput('usd-'+i,'Dolares (opcional)');
-      html+='<button class="btn btn-success btn-sm" style="margin-top:8px;" onclick="completarEstConUnidades('+i+')">Marcar como terminada</button>';
-      html+='</div>';
-    }
-  } else if(todasDone&&locked){
-    var usd=done&&done.dolares?done.dolares:0;
-    if(usd>0){
-      html+='<div style="background:var(--blue-dim);border:1px solid rgba(52,152,219,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:12px;color:var(--blue);margin-top:8px;">'+usd.toLocaleString('es-MX')+' USD</div>';
-    }
+  // Seccion de cierre
+  html+='<div id="cierre-'+i+'" style="margin-top:10px;padding:12px;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--r-sm);display:'+(todasDone&&!yaTerminada&&!locked?'block':'none')+'">';
+  if(todasDone&&!yaTerminada&&!locked){
+    html+='<div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:8px;">Todas las unidades completas</div>';
+    html+=montoInput('usd-'+i,'Dolares (opcional)');
+    html+='<button class="btn btn-success btn-sm" style="margin-top:8px;" onclick="completarEstConUnidades('+i+')">Marcar como terminada</button>';
+  }
+  html+='</div>';
+  // Mostrar dolares si ya termino
+  if(yaTerminada&&done.dolares&&done.dolares>0){
+    html+='<div style="background:var(--blue-dim);border:1px solid rgba(52,152,219,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:12px;color:var(--blue);margin-top:8px;">'+done.dolares.toLocaleString('es-MX')+' USD</div>';
   }
   return html;
 }
@@ -866,8 +885,8 @@ function renderRuta(){
     var esValiente=e.nombre==='Valiente',esBatuecas=e.nombre==='Batuecas';
     var unidades=esValiente?VALIENTE_UNIDADES:esBatuecas?BATUECAS_UNIDADES:null;
     var isCompleted=unidades?
-      done&&unidades.every(function(u){return done[u]&&done[u].monto;})&&done.horaTerminada:
-      done&&done.monto&&!esPendMotivo;
+      (done&&unidades.every(function(u){return done[u]&&done[u].monto;})&&done.horaTerminada):
+      (done&&done.monto&&!esPendMotivo);
     var numIcon=isCompleted?'v':esPendTiempo?'x':(i+1);
     var badges='';
     if(i===0)badges+='<span class="badge badge-green">Inicio</span>';
