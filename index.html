@@ -68,7 +68,6 @@ select option{background:var(--bg2);}
 .vuelta-title{font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:600;letter-spacing:0.06em;margin-bottom:8px;}
 .unidad-section{margin-top:8px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);}
 .unidad-title{font-size:11px;color:var(--amber);text-transform:uppercase;font-weight:600;letter-spacing:0.06em;margin-bottom:8px;}
-.cierre-section{margin-top:10px;padding:12px;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--r-sm);}
 .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-left:6px;}
 .badge-green{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(46,204,113,0.2);}
 .badge-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(155,89,182,0.2);}
@@ -100,10 +99,6 @@ select option{background:var(--bg2);}
 .fab-area{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:linear-gradient(transparent,var(--bg) 30%);padding:12px 16px 20px;z-index:50;}
 .online-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:4px;}
 .locked-banner{background:var(--blue-dim);border:1px solid rgba(52,152,219,0.3);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--blue);display:flex;align-items:center;gap:8px;}
-.parcial-check{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
-.parcial-check:last-child{border-bottom:none;}
-.parcial-cb{width:20px;height:20px;border-radius:4px;border:2px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:transparent;transition:all .15s;}
-.parcial-cb.checked{background:var(--accent);border-color:var(--accent);color:#0a1a10;}
 .hist-section-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:8px;}
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;width:100%;max-width:340px;}
@@ -162,21 +157,6 @@ select option{background:var(--bg2);}
     </div>
   </div>
 </div>
-<div id="modal-parcial" class="modal-overlay" style="display:none;">
-  <div class="modal" style="max-width:400px;">
-    <div class="modal-title">Nueva ruta de parciales</div>
-    <div class="modal-sub">Selecciona estaciones y elige por cual empezar.</div>
-    <div class="cfg-lbl" style="margin-bottom:4px;">Por cual estacion empezar?</div>
-    <select id="parcial-inicio" style="margin-bottom:14px;"></select>
-    <div class="cfg-lbl" style="margin-bottom:6px;">Estaciones con parciales:</div>
-    <div id="parcial-lista" style="max-height:200px;overflow-y:auto;margin-bottom:14px;border:1px solid var(--border);border-radius:var(--r-sm);padding:0 10px;"></div>
-    <div id="modal-parcial-error" style="font-size:12px;color:var(--danger);margin-bottom:8px;display:none;">Selecciona al menos una estacion.</div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-sm" onclick="closeParcialModal()" style="flex:1;">Cancelar</button>
-      <button class="btn btn-primary btn-sm" onclick="generarParcial()" style="flex:1;">Generar ruta</button>
-    </div>
-  </div>
-</div>
 <div id="main-app" style="display:flex;flex-direction:column;min-height:100vh;">
 <div class="header">
   <div class="header-top">
@@ -188,7 +168,6 @@ select option{background:var(--bg2);}
 <div class="sync-bar" id="sync-bar">Sincronizando...</div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('ruta')">Ruta</button>
-  <button class="tab" onclick="showTab('parciales')">Parciales</button>
   <button class="tab" onclick="showTab('estaciones')">Estaciones</button>
   <button class="tab" onclick="showTab('historial')">Historial</button>
   <button class="tab" onclick="showTab('config')">Config</button>
@@ -215,31 +194,10 @@ select option{background:var(--bg2);}
   <div class="msg" id="msg-ruta"></div>
 </div>
 <div class="fab-area" id="fab-ruta">
-  <button class="btn btn-primary" id="btn-generar" onclick="generarRuta(0)">Generar ruta de hoy</button>
+  <button class="btn btn-primary" id="btn-generar" onclick="generarRuta()">Generar ruta de hoy</button>
   <div style="display:flex;gap:8px;">
-    <button class="btn btn-sm" id="btn-variante" onclick="pedirVariante()" style="flex:1;margin-bottom:0;">Variante</button>
     <button class="btn btn-success btn-sm" id="btn-guardar" onclick="guardarRuta()" style="flex:1;margin-bottom:0;">Guardar ruta</button>
     <button class="btn btn-blue btn-sm" id="btn-editar" onclick="pedirEditar()" style="flex:1;margin-bottom:0;display:none;">Editar</button>
-  </div>
-</div>
-<div id="tab-parciales" class="content" style="display:none;">
-  <div id="parcial-bloqueado" class="locked-banner" style="display:none;">Parciales guardados. Usa Editar para cambios.</div>
-  <div id="parcial-sin-ruta" class="locked-banner" style="display:none;background:var(--danger-dim);border-color:rgba(231,76,60,0.3);color:var(--danger);">Primero guarda la ruta principal del dia.</div>
-  <div class="card">
-    <div class="card-title">Ruta de parciales</div>
-    <div id="parcial-route-list" class="stop-list"><div class="empty">No hay ruta de parciales todavia.</div></div>
-    <div id="parcial-total-wrap" style="display:none;">
-      <div class="total-box"><span class="total-box-lbl">Recaudado en parciales</span><span class="total-box-val" id="parcial-rec-txt">$0</span></div>
-      <div id="parcial-bancos-wrap"></div>
-    </div>
-  </div>
-  <div id="alert-parcial"></div>
-</div>
-<div class="fab-area" id="fab-parciales" style="display:none;">
-  <button class="btn btn-amber" id="btn-nueva-parcial" onclick="abrirParcialModal()">+ Nueva ruta de parciales</button>
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-success btn-sm" id="btn-guardar-parcial" onclick="guardarParcial()" style="flex:1;margin-bottom:0;">Guardar parciales</button>
-    <button class="btn btn-blue btn-sm" id="btn-editar-parcial" onclick="pedirEditarParcial()" style="flex:1;margin-bottom:0;display:none;">Editar</button>
   </div>
 </div>
 <div id="tab-estaciones" class="content" style="display:none;">
@@ -298,8 +256,7 @@ const DEFAULT_EST = [
 ];
 let estaciones=[...DEFAULT_EST];
 let rutaActual=[],completadas={},rutaBloqueada=false;
-let parcialActual=[],completadasParcial={},parcialBloqueada=false;
-let histPrincipal=[],histParcial=[];
+let histPrincipal=[];
 let escucharRuta=true;
 let pendientesAyer={};
 let pendienteIdx=null,pendienteVueltaIdx=null,pendienteVueltaNum=null;
@@ -479,14 +436,6 @@ onValue(ref(db,'ruta_hoy'),function(snap){
   document.getElementById('badge-estado').textContent='Ruta activa';
 });
 
-onValue(ref(db,'parcial_hoy'),function(snap){
-  var data=snap.val();
-  if(!data){parcialActual=[];completadasParcial={};parcialBloqueada=false;renderParcial();renderBloqueadoParcial();return;}
-  if(data.fecha&&data.fecha!==fechaKey()){parcialActual=[];completadasParcial={};parcialBloqueada=false;renderParcial();renderBloqueadoParcial();return;}
-  parcialActual=data.paradas||[];completadasParcial=data.completadas||{};parcialBloqueada=data.bloqueada||false;
-  renderParcial();renderBloqueadoParcial();
-});
-
 onValue(ref(db,'historial_principal'),function(snap){
   var data=snap.val();
   histPrincipal=data?Object.values(data).sort(function(a,b){return b.fecha.localeCompare(a.fecha);}):[];
@@ -500,18 +449,12 @@ onValue(ref(db,'historial_principal'),function(snap){
   renderHistUnificado();
 });
 
-onValue(ref(db,'historial_parcial'),function(snap){
-  var data=snap.val();
-  histParcial=data?Object.values(data).sort(function(a,b){return b.fecha.localeCompare(a.fecha);}):[];
-  renderHistUnificado();
-});
-
 function shuffle(arr,seed){
   var a=arr.slice(),s=seed;
   for(var i=a.length-1;i>0;i--){s=(s*1664525+1013904223)&0xffffffff;var j=Math.abs(s)%(i+1);var t=a[i];a[i]=a[j];a[j]=t;}
   return a;
 }
-function dateSeed(e){e=e||0;var d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()+e*999983;}
+function dateSeed(){var d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
 function ordenarConPrioridad(arr,seed){
   var pend=arr.filter(function(e){return pendientesAyer[e.nombre];});
   var rest=shuffle(arr.filter(function(e){return !pendientesAyer[e.nombre];}),seed);
@@ -520,27 +463,21 @@ function ordenarConPrioridad(arr,seed){
   return r;
 }
 
-window.generarRuta=async function(extra){
+window.generarRuta=async function(){
   if(!estaciones.length){showAlert('alert-ruta','No hay estaciones.','err');return;}
   escucharRuta=true;rutaBloqueada=false;completadas={};
-  rutaActual=ordenarConPrioridad(estaciones,dateSeed(extra));
+  rutaActual=ordenarConPrioridad(estaciones,dateSeed());
   showSync(true);
-  await set(ref(db,'ruta_hoy'),{paradas:rutaActual,completadas:{},variante:extra,bloqueada:false,fecha:fechaKey(),fechaLegible:fechaHoy()});
+  await set(ref(db,'ruta_hoy'),{paradas:rutaActual,completadas:{},bloqueada:false,fecha:fechaKey(),fechaLegible:fechaHoy()});
   showSync(false);
   renderRuta();renderBloqueado();updStats();
   document.getElementById('badge-estado').textContent='Ruta activa';
   var nP=Object.keys(pendientesAyer).length;
-  var msg=extra===0?'Ruta generada.':'Variante generada.';
+  var msg='Ruta generada.';
   if(nP>0)msg+=' ('+nP+' pendiente'+(nP>1?'s':'')+' de ayer al inicio)';
   document.getElementById('msg-ruta').textContent=msg;
 };
 
-window.pedirVariante=function(){
-  openModal('Autorizacion','Contrasena para cambiar la ruta.',function(){
-    escucharRuta=true;rutaBloqueada=false;
-    window.generarRuta(Math.floor(Math.random()*89999)+1);
-  });
-};
 window.pedirEditar=function(){
   openModal('Editar ruta','Contrasena para desbloquear.',function(){
     rutaBloqueada=false;escucharRuta=false;renderRuta();renderBloqueado();
@@ -562,8 +499,14 @@ window.guardarRuta=async function(){
       nCompletas++;
       if(nombre==='Valiente'){VALIENTE_UNIDADES.forEach(function(u){if(d[u]&&d[u].monto)totalRec+=d[u].monto;});}
       else if(nombre==='Batuecas'){BATUECAS_UNIDADES.forEach(function(u){if(d[u]&&d[u].monto)totalRec+=d[u].monto;});}
-      else{totalRec+=d.monto||0;if(d.vuelta2&&d.vuelta2.monto)totalRec+=d.vuelta2.monto;if(d.vuelta3&&d.vuelta3.monto)totalRec+=d.vuelta3.monto;}
+      else{
+        totalRec+=d.monto||0;
+        if(d.vuelta2&&d.vuelta2.monto)totalRec+=d.vuelta2.monto;
+        if(d.vuelta3&&d.vuelta3.monto)totalRec+=d.vuelta3.monto;
+      }
       totalDolares+=d.dolares||0;
+      if(d.vuelta2&&d.vuelta2.dolares)totalDolares+=d.vuelta2.dolares;
+      if(d.vuelta3&&d.vuelta3.dolares)totalDolares+=d.vuelta3.dolares;
     }
   });
   var bancos=calcBancos(completadas);
@@ -651,7 +594,6 @@ window.completarEst=async function(i){
   await enviarEmail(est.nombre,monto,banco);
 };
 
-// ── Completar unidad SIN re-renderizar toda la ruta ───────────────────────────
 window.completarUnidad=async function(i,unidad,unidades){
   var est=rutaActual[i];
   var monto=getMontoVal(document.getElementById('u-amt-'+i+'-'+unidad));
@@ -664,14 +606,12 @@ window.completarUnidad=async function(i,unidad,unidades){
   completadas[est.nombre][unidad]={monto:monto,banco:banco,hora:h,horaLlegada:prev.horaLlegada||h,horaSalida:prev.horaSalida||h};
   showSync(true);await set(ref(db,'ruta_hoy/completadas'),completadas);showSync(false);
   showAlert('alert-ruta',est.nombre+' - '+unidad+' completada','ok');
-  // Actualizar solo la seccion de esta unidad sin re-renderizar todo
   var secEl=document.getElementById('unidad-sec-'+i+'-'+unidad);
   if(secEl){
     secEl.innerHTML='<div class="unidad-title">'+unidad+'</div>'+
       '<div class="stop-done-info">'+fmt(monto)+' - '+banco+' - '+h+'</div>'+
       '<button class="btn btn-sm" style="margin-top:6px;width:auto;" onclick="abrirEditarModal('+i+',null,\''+unidad+'\')">Editar</button>';
   }
-  // Verificar si todas las unidades estan completas para mostrar cierre
   var todasListas=unidades.every(function(u){return completadas[est.nombre][u]&&completadas[est.nombre][u].monto;});
   if(todasListas){
     var cierreEl=document.getElementById('cierre-'+i);
@@ -702,6 +642,8 @@ window.completarVuelta=async function(i,num){
   var est=rutaActual[i];
   var monto=getMontoVal(document.getElementById('vamt-'+num+'-'+i));
   var banco=document.getElementById('vbanco-'+num+'-'+i)?document.getElementById('vbanco-'+num+'-'+i).value:'';
+  var usdInp=document.getElementById('vusd-'+num+'-'+i);
+  var dolares=usdInp?getMontoVal(usdInp):0;
   if(monto<=0){showAlert('alert-ruta','Ingresa el monto de la vuelta '+num+'.','err');return;}
   if(!banco){showAlert('alert-ruta','Selecciona el banco.','err');return;}
   var h=ahora();
@@ -709,7 +651,7 @@ window.completarVuelta=async function(i,num){
   var prevV=completadas[est.nombre]['vuelta'+num]||{};
   delete completadas[est.nombre].pendiente;
   delete completadas[est.nombre].horaPendiente;
-  completadas[est.nombre]['vuelta'+num]={monto:monto,banco:banco,hora:h,horaLlegada:prevV.horaLlegada||h,horaSalida:prevV.horaSalida||h};
+  completadas[est.nombre]['vuelta'+num]={monto:monto,banco:banco,hora:h,horaLlegada:prevV.horaLlegada||h,horaSalida:prevV.horaSalida||h,dolares:dolares||0};
   showSync(true);await set(ref(db,'ruta_hoy/completadas'),completadas);showSync(false);
   renderRuta();updStats();showAlert('alert-ruta',est.nombre+' vuelta '+num+' completada','ok');
 };
@@ -747,6 +689,12 @@ function renderDolaresInput(i,done){
   return '<input type="text" id="usd-'+i+'" placeholder="Dolares (opcional)" inputmode="numeric" oninput="formatMontoInput(this)" style="margin-top:4px;border-color:rgba(52,152,219,0.3);"/>';
 }
 
+function renderDolaresVuelta(i,num,v){
+  var usd=v&&v.dolares?v.dolares:0;
+  if(usd>0)return '<div style="background:var(--blue-dim);border:1px solid rgba(52,152,219,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:12px;color:var(--blue);margin-top:4px;">'+usd.toLocaleString('es-MX')+' USD</div>';
+  return '<input type="text" id="vusd-'+num+'-'+i+'" placeholder="Dolares vuelta '+num+' (opcional)" inputmode="numeric" oninput="formatMontoInput(this)" style="margin-top:4px;border-color:rgba(52,152,219,0.3);"/>';
+}
+
 function renderUnidades(i,e,done,locked,unidades){
   var html='';
   var todasDone=done&&unidades.every(function(u){return done[u]&&done[u].monto;});
@@ -765,7 +713,6 @@ function renderUnidades(i,e,done,locked,unidades){
     }
     html+='</div>';
   });
-  // Seccion de cierre
   html+='<div id="cierre-'+i+'" style="margin-top:10px;padding:12px;background:var(--bg2);border:1px solid var(--accent);border-radius:var(--r-sm);display:'+(todasDone&&!yaTerminada&&!locked?'block':'none')+'">';
   if(todasDone&&!yaTerminada&&!locked){
     html+='<div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:8px;">Todas las unidades completas</div>';
@@ -773,7 +720,6 @@ function renderUnidades(i,e,done,locked,unidades){
     html+='<button class="btn btn-success btn-sm" style="margin-top:8px;" onclick="completarEstConUnidades('+i+')">Marcar como terminada</button>';
   }
   html+='</div>';
-  // Mostrar dolares si ya termino
   if(yaTerminada&&done.dolares&&done.dolares>0){
     html+='<div style="background:var(--blue-dim);border:1px solid rgba(52,152,219,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:12px;color:var(--blue);margin-top:8px;">'+done.dolares.toLocaleString('es-MX')+' USD</div>';
   }
@@ -790,6 +736,7 @@ function renderVuelta(i,e,num,locked){
     html+='<div class="stop-pending-motivo">Pendiente por otro motivo'+(v.horaPendiente?' - '+v.horaPendiente:'')+'</div>';
     html+=renderHoraBtnsVuelta(i,num,v);
     html+=montoInput('vamt-'+num+'-'+i,'Monto vuelta '+num+' ($)')+bancosSelect('vbanco-'+num+'-'+i,'');
+    html+=renderDolaresVuelta(i,num,v);
     html+='<button class="btn btn-success btn-sm" onclick="completarVuelta('+i+','+num+')">Marcar vuelta '+num+'</button></div>';
     return html;
   }
@@ -797,6 +744,7 @@ function renderVuelta(i,e,num,locked){
     var html='<div class="vuelta-section"><div class="vuelta-title">Vuelta '+num+'</div>';
     html+=renderHoraBtnsVuelta(i,num,v);
     html+='<div class="stop-done-info">'+fmt(v.monto)+' - '+v.banco+(v.hora?' - '+v.hora:'')+'</div>';
+    if(v.dolares&&v.dolares>0)html+='<div style="background:var(--blue-dim);border:1px solid rgba(52,152,219,0.2);border-radius:var(--r-sm);padding:6px 10px;font-size:12px;color:var(--blue);margin-top:4px;">'+v.dolares.toLocaleString('es-MX')+' USD</div>';
     if(!locked)html+='<button class="btn btn-sm" style="margin-top:6px;width:auto;" onclick="abrirEditarModal('+i+','+num+',null)">Editar</button>';
     html+='</div>';
     return html;
@@ -805,6 +753,7 @@ function renderVuelta(i,e,num,locked){
     var html='<div class="vuelta-section"><div class="vuelta-title">Vuelta '+num+'</div>';
     html+=renderHoraBtnsVuelta(i,num,v);
     html+=montoInput('vamt-'+num+'-'+i,'Monto vuelta '+num+' ($)')+bancosSelect('vbanco-'+num+'-'+i,'');
+    html+=renderDolaresVuelta(i,num,v);
     html+='<button class="btn btn-success btn-sm" onclick="completarVuelta('+i+','+num+')">Marcar vuelta '+num+'</button>';
     html+='<button class="btn btn-danger btn-sm" onclick="abrirPendienteVueltaModal('+i+','+num+')" style="margin-top:4px;">Sin tiempo para vuelta '+num+'</button></div>';
     return html;
@@ -835,7 +784,6 @@ function renderStopNormal(i,e,done,locked){
   if(esValiente||esBatuecas){
     var unidades=esValiente?VALIENTE_UNIDADES:BATUECAS_UNIDADES;
     var todasDone=done&&unidades.every(function(u){return done[u]&&done[u].monto;});
-    var yaTerminada=todasDone&&done&&done.horaTerminada;
     html='<div class="stop-form">';
     html+=renderHoraBtns(i,done);
     html+=renderUnidades(i,e,done,locked,unidades);
@@ -922,101 +870,8 @@ function renderBloqueado(){
   var locked=rutaBloqueada,tieneRuta=rutaActual.length>0;
   document.getElementById('locked-banner').style.display=locked?'flex':'none';
   document.getElementById('btn-generar').disabled=tieneRuta;
-  document.getElementById('btn-variante').disabled=locked;
   document.getElementById('btn-guardar').style.display=locked?'none':'inline-flex';
   document.getElementById('btn-editar').style.display=locked?'inline-flex':'none';
-  document.getElementById('parcial-sin-ruta').style.display=locked?'none':'flex';
-}
-
-window.abrirParcialModal=function(){
-  if(!rutaBloqueada){showAlert('alert-parcial','Primero guarda la ruta principal del dia.','err');return;}
-  document.getElementById('parcial-inicio').innerHTML=estaciones.map(function(e){return '<option value="'+e.nombre+'">'+e.nombre+'</option>';}).join('');
-  document.getElementById('parcial-lista').innerHTML=estaciones.map(function(e,i){
-    return '<div class="parcial-check" onclick="toggleParcial('+i+')"><div class="parcial-cb" id="pcb-'+i+'"></div><div style="flex:1;font-size:14px;color:var(--text);">'+e.nombre+'</div><div style="font-size:11px;color:var(--text3);font-family:var(--mono);">'+fmt(montoRef(e))+'</div></div>';
-  }).join('');
-  document.getElementById('modal-parcial-error').style.display='none';
-  document.getElementById('modal-parcial').style.display='flex';
-};
-window.closeParcialModal=function(){document.getElementById('modal-parcial').style.display='none';};
-window.toggleParcial=function(i){var cb=document.getElementById('pcb-'+i);cb.classList.toggle('checked');cb.textContent=cb.classList.contains('checked')?'v':'';};
-window.generarParcial=async function(){
-  var inicio=document.getElementById('parcial-inicio').value;
-  var seleccionadas=[];
-  document.querySelectorAll('#parcial-lista .parcial-cb.checked').forEach(function(cb){seleccionadas.push(cb.closest('.parcial-check').querySelectorAll('div')[1].textContent);});
-  if(!seleccionadas.length){document.getElementById('modal-parcial-error').style.display='block';return;}
-  var estSel=seleccionadas.map(function(n){return estaciones.find(function(e){return e.nombre===n;});}).filter(Boolean);
-  var primera=estSel.find(function(e){return e.nombre===inicio;})||estSel[0];
-  var resto=shuffle(estSel.filter(function(e){return e.nombre!==primera.nombre;}),Math.floor(Math.random()*999999));
-  parcialActual=[primera].concat(resto);completadasParcial={};parcialBloqueada=false;
-  closeParcialModal();showSync(true);
-  await set(ref(db,'parcial_hoy'),{paradas:parcialActual,completadas:{},bloqueada:false,fecha:fechaKey(),fechaLegible:fechaHoy()});
-  showSync(false);renderParcial();renderBloqueadoParcial();showAlert('alert-parcial','Ruta de parciales generada.','ok');
-};
-window.completarEstParcial=async function(i){
-  var est=parcialActual[i];
-  var monto=getMontoVal(document.getElementById('pamt-'+i));
-  var banco=document.getElementById('pbanco-'+i)?document.getElementById('pbanco-'+i).value:'';
-  if(monto<=0){showAlert('alert-parcial','Ingresa el monto.','err');return;}
-  if(!banco){showAlert('alert-parcial','Selecciona el banco.','err');return;}
-  completadasParcial[est.nombre]={monto:monto,banco:banco,hora:ahora()};
-  showSync(true);await set(ref(db,'parcial_hoy/completadas'),completadasParcial);showSync(false);
-  renderParcial();showAlert('alert-parcial',est.nombre+' completada','ok');
-};
-window.pedirEditarParcial=function(){
-  openModal('Editar parciales','Contrasena para desbloquear.',function(){
-    parcialBloqueada=false;renderParcial();renderBloqueadoParcial();
-    showAlert('alert-parcial','Parciales desbloqueados.','ok');
-  });
-};
-window.guardarParcial=async function(){
-  if(!parcialActual.length){showAlert('alert-parcial','Genera una ruta de parciales primero.','err');return;}
-  var key=fechaKey()+'_p';
-  var totalRec=Object.values(completadasParcial).reduce(function(s,d){return s+(d?d.monto:0);},0);
-  var bancos=calcBancos(completadasParcial);
-  var primeraLlegada=null,ultimaSalida=null;
-  Object.values(completadasParcial).forEach(function(d){
-    if(!d)return;
-    if(d.horaLlegada&&(!primeraLlegada||d.horaLlegada<primeraLlegada))primeraLlegada=d.horaLlegada;
-    if(d.horaSalida&&(!ultimaSalida||d.horaSalida>ultimaSalida))ultimaSalida=d.horaSalida;
-    if(d.hora&&(!ultimaSalida||d.hora>ultimaSalida))ultimaSalida=d.hora;
-  });
-  parcialBloqueada=true;showSync(true);
-  await set(ref(db,'historial_parcial/'+key),{
-    fecha:fechaKey(),fechaLegible:fechaHoy()+' parciales',
-    paradas:parcialActual.map(function(e){return {nombre:e.nombre,montoMax:e.monto,completada:completadasParcial[e.nombre]||null};}),
-    totalRecaudado:totalRec,completadas:Object.keys(completadasParcial).length,bancos:bancos,
-    primeraLlegada:primeraLlegada,ultimaSalida:ultimaSalida
-  });
-  showSync(false);renderBloqueadoParcial();showAlert('alert-parcial','Parciales guardados.','ok');
-};
-window.limpiarHistorial=async function(){
-  if(!confirm('Borrar todo el historial?'))return;
-  await remove(ref(db,'historial_principal'));await remove(ref(db,'historial_parcial'));
-};
-
-function renderParcial(){
-  var el=document.getElementById('parcial-route-list');
-  if(!parcialActual.length){el.innerHTML='<div class="empty">No hay ruta de parciales todavia.</div>';return;}
-  var locked=parcialBloqueada,html='';
-  for(var i=0;i<parcialActual.length;i++){
-    var e=parcialActual[i],done=completadasParcial[e.nombre],isLast=i===parcialActual.length-1;
-    var badges=(i===0?'<span class="badge badge-amber">Inicio</span>':'')+(isLast?'<span class="badge badge-purple">Ultima</span>':'')+(done?'<span class="badge badge-green">Lista</span>':'');
-    var body=done?'<div class="stop-done-info">'+fmt(done.monto)+' - '+done.banco+(done.hora?' - '+done.hora:'')+'</div>':locked?'<div class="stop-meta" style="margin-top:6px;color:var(--blue);">Bloqueado</div>':'<div class="stop-form">'+montoInput('pamt-'+i,'Monto parcial ($)')+bancosSelect('pbanco-'+i,'')+'<button class="btn btn-success btn-sm" onclick="completarEstParcial('+i+')">Marcar como terminada</button></div>';
-    html+='<div class="stop-item">'+(!isLast?'<div class="stop-connector"></div>':'')+'<div class="stop-num c'+(i%11)+'">'+(done?'v':i+1)+'</div><div class="stop-body"><div class="stop-name">'+e.nombre+badges+'</div><div class="stop-meta">Ref. '+fmt(montoRef(e))+'</div>'+body+'</div></div>';
-  }
-  el.innerHTML=html;
-  var rec=Object.values(completadasParcial).reduce(function(s,d){return s+(d?d.monto:0);},0);
-  document.getElementById('parcial-rec-txt').textContent=fmt(rec);
-  document.getElementById('parcial-total-wrap').style.display='block';
-  renderBancosBox(calcBancos(completadasParcial),'parcial-bancos-wrap');
-}
-
-function renderBloqueadoParcial(){
-  var locked=parcialBloqueada;
-  document.getElementById('parcial-bloqueado').style.display=locked?'flex':'none';
-  document.getElementById('btn-nueva-parcial').style.display=locked?'none':'block';
-  document.getElementById('btn-guardar-parcial').style.display=locked?'none':'inline-flex';
-  document.getElementById('btn-editar-parcial').style.display=locked?'inline-flex':'none';
 }
 
 function calcBancos(comps){
@@ -1034,7 +889,6 @@ function calcBancos(comps){
   });
   return b;
 }
-function mergeBancos(b1,b2){var b=Object.assign({},b1);Object.entries(b2||{}).forEach(function(e){b[e[0]]=(b[e[0]]||0)+e[1];});return b;}
 function renderBancosBox(bancos,containerId){
   var el=document.getElementById(containerId);if(!el)return;
   var list=Object.entries(bancos);if(!list.length){el.innerHTML='';return;}
@@ -1042,10 +896,10 @@ function renderBancosBox(bancos,containerId){
     list.map(function(e){return '<div class="banco-box"><span class="banco-box-lbl">'+e[0]+'</span><span class="banco-box-val">'+fmt(e[1])+'</span></div>';}).join('');
 }
 
-function paradasHTML(paradas,tipo){
+function paradasHTML(paradas){
   return paradas.map(function(p,i){
     var montoTxt='';
-    var circulo=tipo==='parcial'?'<div style="width:20px;height:20px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#0a1a10;flex-shrink:0;">P</div>':'<div class="c'+(i%11)+'" style="width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;">'+(i+1)+'</div>';
+    var circulo='<div class="c'+(i%11)+'" style="width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;">'+(i+1)+'</div>';
     if(p.completada){
       if(p.completada.pendiente==='tiempo'){montoTxt='<div style="font-size:11px;color:var(--danger);">Sin tiempo</div>';}
       else if(p.completada.pendiente==='motivo'){montoTxt='<div style="font-size:11px;color:var(--purple);">Pendiente motivo</div>';}
@@ -1053,8 +907,13 @@ function paradasHTML(paradas,tipo){
         var tot=0,usdTxt='';
         if(p.nombre==='Valiente')VALIENTE_UNIDADES.forEach(function(u){if(p.completada[u]&&p.completada[u].monto)tot+=p.completada[u].monto;});
         else if(p.nombre==='Batuecas')BATUECAS_UNIDADES.forEach(function(u){if(p.completada[u]&&p.completada[u].monto)tot+=p.completada[u].monto;});
-        else{tot=p.completada.monto||0;if(p.completada.vuelta2&&p.completada.vuelta2.monto)tot+=p.completada.vuelta2.monto;if(p.completada.vuelta3&&p.completada.vuelta3.monto)tot+=p.completada.vuelta3.monto;}
-        if(p.completada.dolares&&p.completada.dolares>0)usdTxt=' +'+p.completada.dolares.toLocaleString('es-MX')+' USD';
+        else{
+          tot=p.completada.monto||0;
+          if(p.completada.vuelta2&&p.completada.vuelta2.monto)tot+=p.completada.vuelta2.monto;
+          if(p.completada.vuelta3&&p.completada.vuelta3.monto)tot+=p.completada.vuelta3.monto;
+        }
+        var totalUSD=(p.completada.dolares||0)+(p.completada.vuelta2&&p.completada.vuelta2.dolares?p.completada.vuelta2.dolares:0)+(p.completada.vuelta3&&p.completada.vuelta3.dolares?p.completada.vuelta3.dolares:0);
+        if(totalUSD>0)usdTxt=' +'+totalUSD.toLocaleString('es-MX')+' USD';
         montoTxt='<div style="font-family:var(--mono);font-size:11px;color:var(--accent);">'+fmt(tot)+usdTxt+'</div>';
       }
     }else{montoTxt='<div style="font-size:11px;color:var(--text3);">Pendiente</div>';}
@@ -1067,25 +926,14 @@ function renderHistUnificado(){
   if(!histPrincipal.length){el.innerHTML='<div class="empty">Sin rutas guardadas.</div>';return;}
   var html='';
   histPrincipal.forEach(function(h){
-    var fk=h.fecha,pd=histParcial.find(function(p){return p.fecha===fk;});
-    var tP=h.totalRecaudado||0,tPa=pd?pd.totalRecaudado||0:0,tD=tP+tPa;
+    var tP=h.totalRecaudado||0;
     var tUSD=h.totalDolares||0;
-    var bancos=mergeBancos(h.bancos||{},pd?pd.bancos||{}:{});
+    var bancos=h.bancos||{};
     var priLleg=h.primeraLlegada||null,ultSal=h.ultimaSalida||null;
-    if(pd){if(pd.primeraLlegada&&(!priLleg||pd.primeraLlegada<priLleg))priLleg=pd.primeraLlegada;if(pd.ultimaSalida&&(!ultSal||pd.ultimaSalida>ultSal))ultSal=pd.ultimaSalida;}
     var dur=calcDuracion(priLleg,ultSal);
-    var nPa=pd&&pd.paradas?pd.paradas.length:0;
     html+='<div class="card" style="margin-bottom:10px;">';
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+h.fechaLegible+'</div><span class="badge badge-blue">'+(h.completadas||0)+'/'+(h.paradas||[]).length+(nPa>0?'+'+nPa+' parc':'')+'</span></div>';
-    html+='<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Ruta principal</div>';
-    html+=paradasHTML(h.paradas||[],'principal');
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg3);border-radius:var(--r-sm);margin-top:6px;margin-bottom:'+(pd?'12px':'6px')+';"><span style="font-size:12px;color:var(--text3);">Subtotal ruta</span><span style="font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono);">'+fmt(tP)+'</span></div>';
-    if(pd&&nPa){
-      html+='<div style="border-top:1px solid var(--border);margin-bottom:12px;"></div>';
-      html+='<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Parciales <span style="font-size:11px;background:var(--amber-dim);color:var(--amber);padding:2px 7px;border-radius:20px;border:1px solid rgba(243,156,18,0.2);">'+nPa+' paradas</span></div>';
-      html+=paradasHTML(pd.paradas||[],'parcial');
-      html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--bg3);border-radius:var(--r-sm);margin-top:6px;margin-bottom:6px;"><span style="font-size:12px;color:var(--text3);">Subtotal parciales</span><span style="font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono);">'+fmt(tPa)+'</span></div>';
-    }
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+h.fechaLegible+'</div><span class="badge badge-blue">'+(h.completadas||0)+'/'+(h.paradas||[]).length+'</span></div>';
+    html+=paradasHTML(h.paradas||[]);
     var bList=Object.entries(bancos);
     if(bList.length){
       html+='<div style="border-top:1px solid var(--border);margin:10px 0 8px;"></div>';
@@ -1093,7 +941,7 @@ function renderHistUnificado(){
       html+=bList.map(function(e){return '<div class="banco-box"><span class="banco-box-lbl">'+e[0]+'</span><span class="banco-box-val">'+fmt(e[1])+'</span></div>';}).join('');
     }
     if(tUSD>0)html+='<div class="dolares-box" style="margin-top:8px;"><span style="font-size:12px;color:var(--blue);">Dolares del dia</span><span style="font-size:13px;font-weight:600;color:var(--blue);font-family:var(--mono);">'+tUSD.toLocaleString('es-MX')+' USD</span></div>';
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--accent-dim);border:1px solid rgba(46,204,113,0.2);border-radius:var(--r-sm);margin-top:10px;"><span style="font-size:13px;color:var(--accent);">Total del dia</span><span style="font-size:16px;font-weight:600;color:var(--accent);font-family:var(--mono);">'+fmt(tD)+'</span></div>';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--accent-dim);border:1px solid rgba(46,204,113,0.2);border-radius:var(--r-sm);margin-top:10px;"><span style="font-size:13px;color:var(--accent);">Total del dia</span><span style="font-size:16px;font-weight:600;color:var(--accent);font-family:var(--mono);">'+fmt(tP)+'</span></div>';
     html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">';
     if(dur)html+='<span style="font-size:12px;color:var(--text3);">'+priLleg+' - '+ultSal+' - <strong style="color:var(--text2);">'+dur+'</strong></span>';
     else html+='<span></span>';
@@ -1141,7 +989,7 @@ function updStats(){
     if(nombre==='Valiente'){VALIENTE_UNIDADES.forEach(function(u){if(d[u]&&d[u].monto)rec+=d[u].monto;});}
     else if(nombre==='Batuecas'){BATUECAS_UNIDADES.forEach(function(u){if(d[u]&&d[u].monto)rec+=d[u].monto;});}
     else{rec+=d.monto||0;if(d.vuelta2&&d.vuelta2.monto)rec+=d.vuelta2.monto;if(d.vuelta3&&d.vuelta3.monto)rec+=d.vuelta3.monto;}
-    usd+=d.dolares||0;
+    usd+=(d.dolares||0)+(d.vuelta2&&d.vuelta2.dolares?d.vuelta2.dolares:0)+(d.vuelta3&&d.vuelta3.dolares?d.vuelta3.dolares:0);
   });
   document.getElementById('s-rec').textContent=rec>0?'$'+Math.round(rec/1000)+'k':'$0';
   var dEl=document.getElementById('stat-dolares'),sD=document.getElementById('s-dolares');
@@ -1172,12 +1020,11 @@ window.testEmail=async function(){
     showAlert('alert-cfg','Correo enviado.','ok');
   }catch(err){showAlert('alert-cfg','Error: '+JSON.stringify(err),'err');}
 };
-var TABS=['ruta','parciales','estaciones','historial','config'];
+
+var TABS=['ruta','estaciones','historial','config'];
 window.showTab=function(t){
   TABS.forEach(function(id){var el=document.getElementById('tab-'+id);el.style.display=id===t?'flex':'none';if(id===t)el.style.flexDirection='column';});
-  ['fab-ruta','fab-parciales'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-  if(t==='ruta'){var f=document.getElementById('fab-ruta');if(f)f.style.display='block';}
-  if(t==='parciales'){var f=document.getElementById('fab-parciales');if(f)f.style.display='block';}
+  var fr=document.getElementById('fab-ruta');if(fr)fr.style.display=t==='ruta'?'block':'none';
   document.querySelectorAll('.tab').forEach(function(el,i){el.classList.toggle('active',TABS[i]===t);});
 };
 window.showAlert=function(id,msg,type){
@@ -1193,7 +1040,7 @@ function loadCfgInputs(){
   document.getElementById('cfg-email').value=c.email||'francisco.uribes@flechagasolineras.com.mx';
   document.getElementById('firebase-status').innerHTML='<span class="online-dot"></span> Firebase conectado - valores-122df';
 }
-renderEst();updStats();loadCfgInputs();renderBloqueado();renderBloqueadoParcial();
+renderEst();updStats();loadCfgInputs();renderBloqueado();
 </script>
 </body>
 </html>
